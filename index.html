@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#2556d9">
+<meta name="color-scheme" content="light">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<title>Coucou la maison</title>
+<style>
+  :root {
+    --fond: #e8f3f0;
+    --encre: #1b2a41;
+    --carte: #ffffff;
+    --bleu: #2556d9;
+    --vert: #1f8a5b;
+    --vert-fonce: #187548;
+    --orange: #c8561a;
+    --prune: #7a3b8f;
+    --rose: #b83b7a;
+    --ligne: #c6dcd6;
+    --discret: #46586f;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; }
+  body {
+    --accent: var(--bleu);
+    background: var(--fond);
+    color: var(--encre);
+    font-family: "Trebuchet MS", "Avenir Next", "Segoe UI", Roboto, sans-serif;
+    font-size: 18px;
+    line-height: 1.5;
+  }
+  body[data-role="maman"] { --accent: var(--rose); --fond: #fcf0f6; --ligne: #ecd0df; }
+  body[data-role="papa"] { --accent: var(--vert-fonce); --fond: #e8f5ee; --ligne: #c3dfd0; }
+  main { max-width: 640px; margin: 0 auto; padding: 16px 16px 48px; }
+
+  /* En-tête : la couleur de l'appareil indique d'un coup d'œil qui écrit */
+  .banniere {
+    display: flex; align-items: center; gap: 14px; padding: 16px;
+    background: var(--accent); color: #fff; border-radius: 26px;
+  }
+  .maison {
+    flex: none; width: 64px; height: 64px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 2.1rem; background: #fff;
+  }
+  .textes { min-width: 0; }
+  h1 { font-size: 1.9rem; margin: 0; letter-spacing: -0.01em; line-height: 1.15; }
+  .sous-titre { margin: 4px 0 0; font-size: 0.95rem; }
+  .identite {
+    display: inline-block; margin: 8px 0 0; padding: 2px 12px; border-radius: 999px;
+    border: 2px solid rgba(255, 255, 255, 0.75); font-size: 0.85rem; font-weight: 700;
+  }
+  h2 { font-size: 1.25rem; margin: 0; }
+
+  /* Carte « journée » : trois tampons qui se colorent au fil des messages */
+  .journee {
+    background: var(--carte); border: 2px solid var(--ligne); border-radius: 22px;
+    padding: 14px 12px 12px; margin: 16px 0 18px;
+  }
+  .journee h2 { font-size: 1.1rem; padding: 0 4px; }
+  .resume { margin: 2px 4px 12px; color: var(--discret); font-size: 0.95rem; }
+  .etapes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
+  .etapes li { --c: var(--bleu); --p: #e6edff; }
+  .etapes li[data-etape="gouter"] { --c: var(--vert); --p: #e1f4ea; }
+  .etapes li[data-etape="devoirs"] { --c: var(--prune); --p: #f1e5f7; }
+  .sceau {
+    position: relative; display: grid; place-items: center; width: 68px; height: 68px;
+    margin: 0 auto 6px; border-radius: 50%; border: 3px dashed #aebfba;
+    font-size: 1.9rem; filter: grayscale(1); opacity: 0.55;
+  }
+  .coche {
+    display: none; position: absolute; right: -6px; bottom: -4px; width: 26px; height: 26px;
+    border-radius: 50%; background: #fff; border: 2px solid var(--c); color: var(--c);
+    font-style: normal; font-weight: 700; font-size: 0.95rem; line-height: 22px; text-align: center;
+  }
+  .fait .sceau { background: var(--p); border: 3px solid var(--c); filter: none; opacity: 1; }
+  .fait .coche { display: block; }
+  .fait.nouveau .sceau { animation: pop 0.55s cubic-bezier(0.3, 1.6, 0.5, 1); }
+  @keyframes pop { from { transform: scale(0.4); } to { transform: scale(1); } }
+  .etiquette { display: block; font-weight: 700; font-size: 0.9rem; }
+  .quand { display: block; font-size: 0.8rem; color: var(--discret); }
+
+  .boutons { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
+  .boutons button {
+    border: 0; border-radius: 18px; padding: 16px 12px; min-height: 84px;
+    color: #fff; font: inherit; font-weight: 700; font-size: 1.05rem; cursor: pointer;
+    box-shadow: 0 4px 0 rgba(27, 42, 65, 0.22);
+  }
+  .boutons button:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(27, 42, 65, 0.22); }
+  .large { grid-column: 1 / -1; }
+  .b-rentre { background: var(--bleu); font-size: 1.35rem; min-height: 110px !important; }
+  .b-gouter { background: var(--vert); }
+  .b-devoirs { background: var(--prune); }
+  .b-aide { background: var(--orange); }
+  .p-recu { background: var(--vert-fonce); font-size: 1.2rem; min-height: 72px !important; }
+  .p-gouter { background: var(--orange); }
+  .p-devoirs { background: var(--prune); }
+  .p-ecran { background: var(--bleu); }
+  .p-arrive { background: #4a5d78; }
+  .p-bravo { background: var(--rose); }
+  #boutons-parent button { min-height: 76px; }
+
+  /* Autocollants : un emoji seul, affiché en grand dans la conversation */
+  .stickers { display: flex; gap: 8px; margin-top: 12px; }
+  .stickers button {
+    flex: 1; min-width: 0; height: 58px; border-radius: 16px; border: 2px solid var(--ligne);
+    background: var(--carte); font-size: 1.7rem; line-height: 1; cursor: pointer;
+    box-shadow: 0 3px 0 rgba(27, 42, 65, 0.12);
+  }
+  .stickers button:active { transform: translateY(2px); box-shadow: none; }
+
+  .libre { display: flex; gap: 8px; margin-top: 16px; }
+  .libre input[type="text"], .libre input[type="password"] {
+    flex: 1; min-width: 0; font: inherit; padding: 12px 14px; border-radius: 14px;
+    border: 2px solid var(--ligne); background: var(--carte); color: var(--encre);
+  }
+  .libre button {
+    font: inherit; font-weight: 700; padding: 12px 18px; border-radius: 14px;
+    border: 0; background: var(--accent); color: #fff; cursor: pointer;
+  }
+
+  button:focus-visible, input:focus-visible, summary:focus-visible {
+    outline: 3px solid #f2b705; outline-offset: 2px;
+  }
+  button:disabled { opacity: 0.6; cursor: wait; }
+
+  #statut { min-height: 1.6em; font-weight: 700; margin: 12px 0 0; }
+  #statut.erreur { color: #b3261e; }
+
+  .entete-liste { display: flex; align-items: center; justify-content: space-between; margin: 28px 0 10px; }
+  .petit {
+    font: inherit; font-size: 0.9rem; font-weight: 700; padding: 6px 12px; border-radius: 999px;
+    border: 2px solid var(--ligne); background: var(--carte); color: var(--encre); cursor: pointer;
+  }
+
+  ul#messages { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+  ul#messages li { display: flex; align-items: flex-end; gap: 10px; }
+  ul#messages li.mien { flex-direction: row-reverse; }
+  ul#messages li.vide { display: block; color: var(--discret); }
+  .avatar {
+    flex: none; width: 46px; height: 46px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 1.55rem;
+    background: var(--carte); border: 3px solid var(--ligne);
+  }
+  .bulle {
+    max-width: 78%; padding: 8px 14px 10px; background: var(--carte);
+    border: 2px solid var(--ligne); border-radius: 18px 18px 18px 6px; overflow-wrap: anywhere;
+  }
+  li.mien .bulle { border-radius: 18px 18px 6px 18px; }
+  .nom { display: block; font-size: 0.8rem; font-weight: 700; color: var(--discret); }
+  .heure { font-weight: 400; margin-left: 6px; }
+  .r-enfant .avatar { border-color: #8fa8ee; }
+  .r-enfant .bulle { background: #f3f6ff; border-color: #b9c8f2; }
+  .r-maman .avatar { border-color: #de93bb; }
+  .r-maman .bulle { background: #fff1f8; border-color: #ebb9d2; }
+  .r-papa .avatar { border-color: #6fc29b; }
+  .r-papa .bulle { background: #f0fbf5; border-color: #b4dcc8; }
+  li.sticker .bulle { background: transparent; border: 0; padding: 0 4px; font-size: 3rem; line-height: 1.15; }
+  li.sticker .nom { font-size: 0.8rem; line-height: 1.4; }
+
+  details { margin-top: 40px; background: var(--carte); border: 2px solid var(--ligne); border-radius: 14px; padding: 10px 14px; }
+  summary { cursor: pointer; font-weight: 700; min-height: 32px; }
+  details p { font-size: 0.95rem; margin: 10px 0; }
+  fieldset { border: 0; padding: 0; margin: 12px 0 0; }
+  legend { font-weight: 700; font-size: 0.95rem; padding: 0; }
+  label.choix { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 1rem; }
+  label.choix input { width: 22px; height: 22px; }
+
+  #confettis { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 10; }
+  #confettis span { position: absolute; bottom: 12%; line-height: 1; }
+
+  @media (max-width: 420px) {
+    #boutons-enfant { grid-template-columns: 1fr; }
+    h1 { font-size: 1.65rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .boutons button:active, .stickers button:active { transform: none; }
+    .fait.nouveau .sceau { animation: none; }
+  }
+</style>
+</head>
+<body data-role="enfant">
+<main>
+  <header class="banniere">
+    <div class="maison" aria-hidden="true">🏠</div>
+    <div class="textes">
+      <h1 id="titre">Coucou la maison</h1>
+      <p class="sous-titre" id="sous-titre">Clique sur un bouton pour prévenir papa et maman.</p>
+      <p class="identite" id="identite" hidden></p>
+    </div>
+  </header>
+
+  <section class="journee" aria-labelledby="titre-journee">
+    <h2 id="titre-journee">Ma journée</h2>
+    <p class="resume" id="resume"></p>
+    <ul class="etapes" id="etapes">
+      <li data-etape="rentre"><span class="sceau" aria-hidden="true">🏠<i class="coche">✓</i></span><span class="etiquette">Rentré</span><span class="quand">à venir</span></li>
+      <li data-etape="gouter"><span class="sceau" aria-hidden="true">🍎<i class="coche">✓</i></span><span class="etiquette">Goûter</span><span class="quand">à venir</span></li>
+      <li data-etape="devoirs"><span class="sceau" aria-hidden="true">📚<i class="coche">✓</i></span><span class="etiquette">Devoirs</span><span class="quand">à venir</span></li>
+    </ul>
+  </section>
+
+  <section class="boutons" id="boutons-enfant" aria-label="Messages rapides">
+    <button class="b-rentre large" data-msg="🏠 Je suis rentré !">🏠 Je suis rentré !</button>
+    <button class="b-gouter" data-msg="🍎 J'ai fini mon goûter.">🍎 J'ai fini mon goûter</button>
+    <button class="b-devoirs" data-msg="📚 J'ai fini mes devoirs.">📚 J'ai fini mes devoirs</button>
+    <button class="b-aide large" data-msg="🙋 J'ai besoin de toi, tu peux m'appeler ?">🙋 J'ai besoin de vous</button>
+  </section>
+
+  <section class="boutons" id="boutons-parent" aria-label="Réponses rapides" hidden>
+    <button class="p-recu large" data-msg="👋 Bien reçu, bienvenue à la maison !">👋 Bien reçu !</button>
+    <button class="p-gouter" data-msg="🍎 Ton goûter t'attend dans la cuisine.">🍎 Goûter dans la cuisine</button>
+    <button class="p-devoirs" data-msg="📚 Les devoirs d'abord, s'il te plaît.">📚 Devoirs d'abord</button>
+    <button class="p-ecran" data-msg="📵 Pas d'écran avant 18h, s'il te plaît.">📵 Pas d'écran avant 18h</button>
+    <button class="p-arrive" data-msg="⏰ J'arrive bientôt, à tout à l'heure.">⏰ J'arrive bientôt</button>
+    <button class="p-bravo large" data-msg="🌟 Bravo, merci !">🌟 Bravo, merci !</button>
+  </section>
+
+  <section class="stickers" aria-label="Autocollants">
+    <button type="button" data-msg="❤️" aria-label="Envoyer un cœur">❤️</button>
+    <button type="button" data-msg="🌟" aria-label="Envoyer une étoile">🌟</button>
+    <button type="button" data-msg="👍" aria-label="Envoyer un pouce levé">👍</button>
+    <button type="button" data-msg="🎉" aria-label="Envoyer une fête">🎉</button>
+    <button type="button" data-msg="😘" aria-label="Envoyer un bisou">😘</button>
+  </section>
+
+  <div class="libre">
+    <input id="texte" type="text" maxlength="300" placeholder="Écris un message…" aria-label="Ton message">
+    <button id="envoyer" type="button">Envoyer</button>
+  </div>
+  <p id="statut" role="status"></p>
+
+  <div class="entete-liste">
+    <h2>Messages de la famille</h2>
+    <button class="petit" id="actualiser" type="button">↻ Actualiser</button>
+  </div>
+  <ul id="messages"><li class="vide">Aucun message pour l'instant.</li></ul>
+
+  <details id="reglage">
+    <summary>Réglage (pour les parents)</summary>
+    <fieldset>
+      <legend>Qui utilise cet appareil ?</legend>
+      <label class="choix"><input type="radio" name="role" value="enfant"> 👦 Notre fils (le Mac familial)</label>
+      <label class="choix"><input type="radio" name="role" value="maman"> 👩 Maman</label>
+      <label class="choix"><input type="radio" name="role" value="papa"> 👨 Papa</label>
+    </fieldset>
+    <p>Nom secret du canal ntfy : lettres, chiffres, tiret ou tiret bas, 10 à 64 caractères. Il reste enregistré dans ce navigateur. Laisse le champ vide pour garder celui déjà enregistré.</p>
+    <div class="libre">
+      <input id="canal" type="password" autocomplete="off" aria-label="Nom secret du canal">
+      <button id="enregistrer" type="button">Enregistrer</button>
+    </div>
+  </details>
+</main>
+<div id="confettis" aria-hidden="true"></div>
+
+<script>
+  // Options : tu peux écrire le canal et le rôle directement ici, entre les guillemets,
+  // au lieu d'utiliser le « Réglage » en bas de page.
+  // ROLE_FIXE accepte : "enfant", "maman" ou "papa".
+  // Attention : si tu écris le canal ici, ne publie jamais ce fichier sur Internet.
+  var CANAL_FIXE = "";
+  var ROLE_FIXE = "";
+
+  var SERVEUR = "https://ntfy.sh/";
+  var PROFILS = {
+    enfant: { emoji: "👦", nom: "Notre fils" },
+    maman: { emoji: "👩", nom: "Maman" },
+    papa: { emoji: "👨", nom: "Papa" }
+  };
+  var COULEURS = { enfant: "#2556d9", maman: "#b83b7a", papa: "#187548" };
+
+  // Les tampons de la journée s'allument uniquement avec les trois boutons exacts de l'enfant.
+  // Un message écrit à la main ne coche rien : le texte doit être identique à celui du bouton.
+  var ETAPES = [
+    { cle: "rentre", msg: "🏠 Je suis rentré !" },
+    { cle: "gouter", msg: "🍎 J'ai fini mon goûter." },
+    { cle: "devoirs", msg: "📚 J'ai fini mes devoirs." }
+  ];
+  var etapesVues = {};
+  var derniersTampons = {};
+  var premierChargement = true;
+
+  var statut = document.getElementById("statut");
+  var liste = document.getElementById("messages");
+  var champCanal = document.getElementById("canal");
+
+  function roleConnu(r) { return Object.prototype.hasOwnProperty.call(PROFILS, r); }
+
+  function lireRole() {
+    var r = ROLE_FIXE;
+    if (!r) { try { r = localStorage.getItem("role-famille") || ""; } catch (e) { r = ""; } }
+    return roleConnu(r) ? r : "enfant";
+  }
+  var role = lireRole();
+
+  function lireCanal() {
+    if (CANAL_FIXE) return CANAL_FIXE;
+    try { return localStorage.getItem("canal-famille") || ""; } catch (e) { return ""; }
+  }
+  function canalValide(c) { return /^[A-Za-z0-9_-]{10,64}$/.test(c); }
+
+  function dire(texte, erreur) {
+    statut.textContent = texte;
+    statut.className = erreur ? "erreur" : "";
+  }
+
+  function heure(t) {
+    return new Date(t * 1000).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  }
+
+  // Mini feu d'artifice d'emojis, déclenché uniquement par un envoi ou l'arrivée d'un « rentré ».
+  function exploser(emojis) {
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var zone = document.getElementById("confettis");
+    for (var i = 0; i < 14; i++) {
+      var s = document.createElement("span");
+      if (!s.animate) return;
+      s.textContent = emojis[i % emojis.length];
+      s.style.left = (10 + Math.random() * 80) + "%";
+      s.style.fontSize = (22 + Math.random() * 22) + "px";
+      zone.appendChild(s);
+      var dx = (Math.random() - 0.5) * 140;
+      var dy = -(180 + Math.random() * 280);
+      var anim = s.animate([
+        { transform: "translate(0, 0) rotate(0deg)", opacity: 1 },
+        { transform: "translate(" + dx + "px, " + dy + "px) rotate(" + ((Math.random() - 0.5) * 90) + "deg)", opacity: 0 }
+      ], { duration: 1100 + Math.random() * 600, easing: "cubic-bezier(0.2, 0.7, 0.3, 1)" });
+      anim.onfinish = (function (el) { return function () { el.remove(); }; })(s);
+    }
+  }
+
+  function explosionPour(message) {
+    var m = message.match(/\p{Extended_Pictographic}️?/u);
+    var e = m ? m[0] : "✨";
+    exploser([e, "✨", e, "⭐"]);
+  }
+
+  function rendreResume() {
+    var enfant = role === "enfant";
+    var r = document.getElementById("resume");
+    if (!canalValide(lireCanal())) {
+      r.textContent = "Il reste à saisir le réglage, en bas de la page.";
+    } else if (enfant) {
+      r.textContent = derniersTampons.rentre
+        ? "Tu as prévenu à " + heure(derniersTampons.rentre) + ". Bravo !"
+        : "Pense à appuyer sur « Je suis rentré » en arrivant.";
+    } else {
+      r.textContent = derniersTampons.rentre
+        ? "Ton fils est rentré à " + heure(derniersTampons.rentre) + "."
+        : "Ton fils n'a pas encore signalé son arrivée.";
+    }
+  }
+
+  function majJournee(faites) {
+    ETAPES.forEach(function (e) {
+      var li = document.querySelector('[data-etape="' + e.cle + '"]');
+      var fait = !!faites[e.cle];
+      var nouveau = fait && !etapesVues[e.cle] && !premierChargement;
+      li.classList.toggle("fait", fait);
+      li.classList.toggle("nouveau", nouveau);
+      li.querySelector(".quand").textContent = fait ? heure(faites[e.cle]) : "à venir";
+      if (nouveau && e.cle === "rentre" && role !== "enfant") exploser(["🏠", "🎉", "✨"]);
+      etapesVues[e.cle] = fait;
+    });
+    premierChargement = false;
+    derniersTampons = faites;
+    rendreResume();
+  }
+
+  function appliquerRole() {
+    var enfant = role === "enfant";
+    document.body.setAttribute("data-role", role);
+    document.querySelector('meta[name="theme-color"]').setAttribute("content", COULEURS[role]);
+    document.getElementById("boutons-enfant").hidden = !enfant;
+    document.getElementById("boutons-parent").hidden = enfant;
+    document.getElementById("titre").textContent = enfant ? "Coucou la maison" : "Coucou, " + PROFILS[role].nom;
+    document.getElementById("sous-titre").textContent = enfant
+      ? "Clique sur un bouton pour prévenir papa et maman."
+      : "Réponds en un clic : ton fils voit le message sur le Mac.";
+    document.getElementById("titre-journee").textContent = enfant ? "Ma journée" : "Sa journée";
+    var id = document.getElementById("identite");
+    id.hidden = enfant;
+    id.textContent = "Tu écris en tant que " + PROFILS[role].emoji + " " + PROFILS[role].nom;
+    document.getElementById("texte").placeholder = enfant ? "Écris un message…" : "Écris ta réponse…";
+    document.querySelectorAll('input[name="role"]').forEach(function (r) { r.checked = (r.value === role); });
+    rendreResume();
+  }
+
+  function envoyer(message) {
+    var canal = lireCanal();
+    if (!canalValide(canal)) {
+      document.getElementById("reglage").open = true;
+      dire(role === "enfant"
+        ? "Demande à un parent de saisir le réglage en bas de la page."
+        : "Saisis d'abord le nom du canal dans le réglage, en bas de la page.", true);
+      return;
+    }
+    var boutons = document.querySelectorAll("button");
+    boutons.forEach(function (b) { b.disabled = true; });
+    fetch(SERVEUR + encodeURIComponent(canal), {
+      method: "POST",
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
+      body: PROFILS[role].emoji + " " + message
+    }).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      dire("Message envoyé ✓", false);
+      document.getElementById("texte").value = "";
+      explosionPour(message);
+      setTimeout(function () { chargerMessages(false); }, 1000);
+    }).catch(function () {
+      dire("Le message n'est pas parti. Vérifie la connexion internet et réessaie.", true);
+    }).then(function () {
+      boutons.forEach(function (b) { b.disabled = false; });
+    });
+  }
+
+  // Un message commence par l'emoji de son auteur : 👦, 👩 ou 👨.
+  // Un message écrit directement dans l'appli ntfy, sans emoji, s'affiche comme « Message direct ».
+  function decoder(texte) {
+    var cles = ["enfant", "maman", "papa"];
+    for (var i = 0; i < cles.length; i++) {
+      var e = PROFILS[cles[i]].emoji;
+      if (texte.indexOf(e) === 0) return { role: cles[i], texte: texte.slice(e.length).trim() };
+    }
+    return { role: "autre", texte: texte };
+  }
+
+  function chargerMessages(manuel) {
+    var canal = lireCanal();
+    if (!canalValide(canal)) return;
+    fetch(SERVEUR + encodeURIComponent(canal) + "/json?poll=1&since=12h")
+      .then(function (r) { if (!r.ok) throw new Error(); return r.text(); })
+      .then(function (texte) {
+        var msgs = [];
+        texte.split("\n").forEach(function (ligne) {
+          if (!ligne.trim()) return;
+          try {
+            var m = JSON.parse(ligne);
+            if (m.event === "message" && m.message) msgs.push(m);
+          } catch (e) {}
+        });
+
+        // Tampons du jour : premier message exact de l'enfant pour chaque étape.
+        var debut = new Date();
+        debut.setHours(0, 0, 0, 0);
+        var faites = {};
+        msgs.forEach(function (m) {
+          if (m.time * 1000 < debut.getTime()) return;
+          var d = decoder(m.message);
+          if (d.role !== "enfant") return;
+          ETAPES.forEach(function (e) {
+            if (d.texte === e.msg && !faites[e.cle]) faites[e.cle] = m.time;
+          });
+        });
+        majJournee(faites);
+
+        msgs = msgs.slice(-15).reverse();
+        liste.textContent = "";
+        if (!msgs.length) {
+          var vide = document.createElement("li");
+          vide.className = "vide";
+          vide.textContent = "Aucun message pour l'instant.";
+          liste.appendChild(vide);
+        }
+        msgs.forEach(function (m) {
+          var d = decoder(m.message);
+          var li = document.createElement("li");
+          li.className = "r-" + d.role + (d.role === role ? " mien" : "");
+          if (d.texte.length <= 12 && /^(?:\p{Extended_Pictographic}|️|‍|\s)+$/u.test(d.texte)) {
+            li.className += " sticker";
+          }
+
+          var avatar = document.createElement("div");
+          avatar.className = "avatar";
+          avatar.setAttribute("aria-hidden", "true");
+          avatar.textContent = d.role === "autre" ? "💬" : PROFILS[d.role].emoji;
+
+          var bulle = document.createElement("div");
+          bulle.className = "bulle";
+          var nom = document.createElement("span");
+          nom.className = "nom";
+          nom.textContent = d.role === role ? "Moi" : (d.role === "autre" ? "Message direct" : PROFILS[d.role].nom);
+          var h = document.createElement("span");
+          h.className = "heure";
+          h.textContent = heure(m.time);
+          nom.appendChild(h);
+          var corps = document.createElement("span");
+          corps.textContent = d.texte; // textContent : jamais de HTML interprété
+
+          bulle.appendChild(nom);
+          bulle.appendChild(corps);
+          li.appendChild(avatar);
+          li.appendChild(bulle);
+          liste.appendChild(li);
+        });
+        if (manuel) dire("Messages à jour ✓", false);
+      })
+      .catch(function () {
+        if (manuel) dire("Impossible de récupérer les messages. Vérifie la connexion internet.", true);
+      });
+  }
+
+  document.querySelectorAll("[data-msg]").forEach(function (b) {
+    b.addEventListener("click", function () { envoyer(b.getAttribute("data-msg")); });
+  });
+
+  document.getElementById("envoyer").addEventListener("click", function () {
+    var t = document.getElementById("texte").value.trim();
+    if (t) envoyer(t);
+  });
+  document.getElementById("texte").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") document.getElementById("envoyer").click();
+  });
+  document.getElementById("actualiser").addEventListener("click", function () { chargerMessages(true); });
+
+  document.getElementById("enregistrer").addEventListener("click", function () {
+    var c = champCanal.value.trim();
+    var choisi = document.querySelector('input[name="role"]:checked');
+    if (c && !canalValide(c)) {
+      dire("Nom de canal invalide : 10 à 64 lettres, chiffres, tirets.", true);
+      return;
+    }
+    if (!c && !canalValide(lireCanal())) {
+      dire("Saisis d'abord le nom du canal.", true);
+      return;
+    }
+    try {
+      if (c) localStorage.setItem("canal-famille", c);
+      if (choisi) localStorage.setItem("role-famille", choisi.value);
+    } catch (e) {
+      dire("Ce navigateur refuse d'enregistrer le réglage. Utilise les lignes CANAL_FIXE et ROLE_FIXE dans le fichier.", true);
+      return;
+    }
+    champCanal.value = "";
+    role = lireRole();
+    appliquerRole();
+    document.getElementById("reglage").open = false;
+    dire("Réglage enregistré ✓", false);
+    chargerMessages(false);
+  });
+
+  appliquerRole();
+  if (!canalValide(lireCanal())) {
+    document.getElementById("reglage").open = true;
+  } else {
+    chargerMessages(false);
+  }
+  setInterval(function () { chargerMessages(false); }, 30000);
+</script>
+</body>
+</html>
